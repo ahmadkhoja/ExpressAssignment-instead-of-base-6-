@@ -54,7 +54,7 @@ app.get('/search?:s',(req,res)=>{
                 'Content-Type': 'text/plain' });
             res.write(`
                 ok ${s}
-        `)
+         `)
             res.send()
         }else{
             res.writeHead(500, {
@@ -236,6 +236,51 @@ app.get('/search?:s',(req,res)=>{
         res.send()
     })
     
+    let readMovieById = function(input,id){
+        if(input[1] == 'movies' && input[2] == 'read' &&  input[3] == 'id'&& input[4] == id){
+            for(let i = 0; i <= movies.length-1; i++){
+                let movie = movies[i]
+                let title = movie.title
+                let year = movie.year
+                let rating = movie.rating
+                if(i == id){
+                    console.log(title,year,rating)
+                    let theMovie = `
+                    <h2>Read Movie `+ id +`</h2>
+                    <p> title : `+ title +`</p>
+                    <p> year : `+ year +`</p>
+                    <p> rating :`+ rating +`</p>
+                    `
+                    return theMovie
+                }
+            }
+            return `Page not found 404`
+        }
+    }
+        
+        app.get('/movies/read/id/:id',(req,res)=>{
+                let url = req.url
+                let input = url.split('/')
+                input[0] = '/'
+                id = input[4]
+                let a = readMovieById(input,id)
+                if(a != 'Page not found 404'){
+                    res.writeHead(200, {
+                        'Content-Type': 'text/html' });
+                        res.write(`<meta charset="UTF-8">`)
+                    res.write(a)
+                    res.send()
+                }
+                else{
+                    res.writeHead(404, {
+                        'Content-Type': 'text/html' });
+                        res.write(`
+                        <p>the movie `+ id +` does not exist</p>
+                        `)
+                        res.send()
+                }
+        })
+
     app.get('/movies/create',(req,res)=>{
         res.write(`
             Create Movie 
