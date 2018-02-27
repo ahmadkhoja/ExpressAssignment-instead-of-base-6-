@@ -244,7 +244,7 @@ app.get('/search?:s',(req,res)=>{
                 let year = movie.year
                 let rating = movie.rating
                 if(i == id){
-                    console.log(title,year,rating)
+                    // console.log(title,year,rating)
                     let theMovie = `
                     <h2>Read Movie `+ id +`</h2>
                     <p> title : `+ title +`</p>
@@ -280,7 +280,48 @@ app.get('/search?:s',(req,res)=>{
                         res.send()
                 }
         })
+        // const movies = [
+        //     { title: 'Jaws', year: 1975, rating: 8 },
+        //     { title: 'Avatar', year: 2009, rating: 7.8 },
+        //     { title: 'Brazil', year: 1985, rating: 8 },
+        //     { title: 'الإرهاب والكباب‎', year: 1992, rating: 6.2 }
+        // ]
 
+        // 
+        
+        app.get('/movies/add',(req,res)=>{
+            let result = req.query
+            console.log(result)
+            // console.log(movies)
+            // res.write(`` + `---- Title: ` +  result.title + `---- Year: ` + result.year + `---- Rating: ` + result.rating)
+            
+            //method 1
+            // if(result.rating == ''){
+            //     result.rating = 4;  
+            // }
+            //method 2 logic
+            result.rating = result.rating || 4 
+            //method 3 ternary operations
+            // result.rating = result.rating ? result.rating : 4
+            
+            if(result.title == '' || result.year == '' || result.year.length !=4 || isNaN(result.year) ==true ){
+                // { message:'you cannot create a movie without providing a title and a year'}
+                res.writeHead(403, {'Content-Type': 'text/html' });
+                res.write(`<p>you cannot create a movie without providing a title and a year</p>`)
+                res.send() 
+            }else{
+                res.writeHead(200, {
+                    'Content-Type': 'text/html' });
+                movies.push(result)
+                res.write(`<meta charset="UTF-8">`)
+                let a = readMovie()
+                res.write(a)
+                res.send() 
+            }
+            
+            
+        })
+        
     app.get('/movies/create',(req,res)=>{
         res.write(`
             Create Movie 
