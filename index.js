@@ -30,14 +30,11 @@ app.get('/time',(req,res)=>{
 
 app.get('/hello/:id?',(req,res)=>{
 
-    let url = req.url
-    let input = url.split('/')
-    input[0] = '/'
-    id = input[2]
     res.writeHead(200, {
         'Content-Type': 'text/plain' });
+        let result = req.params
     res.write(`
-        Hello ${id}
+        Hello `+ result.id +`
     `)
     res.send()
 })
@@ -78,7 +75,7 @@ app.get('/search?:s',(req,res)=>{
                 let title = movie.title
                 let year = movie.year
                 let rating = movie.rating
-                console.log(title,year,rating)
+                // console.log(title,year,rating)
                 theMovie += `
                 <h2>Read Movie `+ (i+1) +`</h2>
                 <p> title : `+ title +`</p>
@@ -97,7 +94,7 @@ app.get('/search?:s',(req,res)=>{
         res.writeHead(200, {
             'Content-Type': 'text/html' });
         let a = readMovie()
-        console.log(a)
+        // console.log(a)
         res.write(`
         <html>
         <head></head>
@@ -122,7 +119,7 @@ app.get('/search?:s',(req,res)=>{
                 let title = movie.title
                 let year = movie.year
                 let rating = movie.rating
-                console.log(title,year,rating)
+                // console.log(title,year,rating)
                 theMovie += `
                 <h2>Read Movie`+ (i+1) +` By Date</h2>
                 <p> title : `+ title +`</p>
@@ -291,7 +288,7 @@ app.get('/search?:s',(req,res)=>{
         
         app.get('/movies/add',(req,res)=>{
             let result = req.query
-            console.log(result)
+            // console.log(result)
             // console.log(movies)
             // res.write(`` + `---- Title: ` +  result.title + `---- Year: ` + result.year + `---- Rating: ` + result.rating)
             
@@ -321,26 +318,55 @@ app.get('/search?:s',(req,res)=>{
             
             
         })
+         
+ 
+    app.get('/movies/update/:id',(req,res)=>{
+        let urlId = req.params.id 
+        let id = parseInt(urlId)
+        if(id > movies.length || id <=0){
+            res.writeHead(404, {
+                'Content-Type': 'text/html' });
+                res.write(`<p>Page not found error 404</p>`)
+                return res.send();
+        }
+        res.writeHead(200, {
+            'Content-Type': 'text/html' });  
         
-    app.get('/movies/create',(req,res)=>{
-        res.write(`
-            Create Movie 
-        `)
-        res.send()
+        let result = req.query
+        let oldTitle = movies[id-1].title
+        let oldRating = movies[id-1].rating
+        let oldYear = movies[id-1].year
+        console.log('old title: ',oldTitle,'oldRating: ',oldRating,'oldYear: ',oldYear)
+        
+        result.title = result.title || oldTitle
+        result.rating = result.rating || oldRating
+        result.year = result.year || oldYear
+        let updateMovie = movies.splice(id-1,1,result)
+        // console.log(result,id)
+        let a = readMovie() 
+        res.write(`<meta charset="UTF-8">`)
+        res.write(`` + a)
+        res.send()   
+         
     })
 
-    app.get('/movies/update',(req,res)=>{
-        res.write(`
-            Update Movie
-        `)
-        res.send()
-    })
-
-    app.get('/movies/delete',(req,res)=>{
-        res.write(`
-            Delete Movie
-        `)
-        res.send()
+    app.get('/movies/delete/:id?',(req,res)=>{
+        let result = req.params
+        console.log("result id: "+result.id, movies.length,"---------------------- ")
+        if((result.id > movies.length) || result.id == 0){ 
+            res.writeHead(404, {
+                'Content-Type': 'text/html' });    
+            res.write(`<p>the movie ${result.id} does not exist</p>`)
+            res.send()
+            return; 
+        }  
+        res.writeHead(200, {    
+            'Content-Type': 'text/html' }); 
+            movies.splice(result.id-1,1)   
+            let a = readMovie() 
+            res.write(`<meta charset="UTF-8">`)
+            res.write(a)   
+            res.send() 
     })
 
 
